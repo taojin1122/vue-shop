@@ -22,3 +22,10 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+在.prettierrc配置文件中，配置代码格式化的一些设置
+
+
+
+
