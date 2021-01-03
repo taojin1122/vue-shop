@@ -76,6 +76,7 @@
                 type="warning"
                 icon="el-icon-star-off"
                 size="mini"
+                @click="setRoleDialog(scope.row)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -157,6 +158,35 @@
         <el-button type="primary" @click="editUserInfo">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 配置角色对话框 -->
+    <el-dialog
+      title="配置角色"
+      :visible.sync="setRoleDialogVisible"
+      width="50%"
+      @close="setRoleDialogClose"
+    >
+      <div class="role">
+        <p><span>当前用户：</span>{{ userInfo.username }}</p>
+        <p><span>当前角色：</span>{{ userInfo.role_name }}</p>
+        <p>
+          <span>分配新角色：</span>
+          <el-select v-model="selectRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            >
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="saveRoleInfo">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -190,11 +220,17 @@ export default {
         // 当前每页条数
         pagesize: 5,
       },
+      value: '',
       pagesizeList: [5, 10, 15, 20],
       userList: [],
       total: 0,
       addDialogVisible: false,
       editDialogVisible: false,
+      setRoleDialogVisible: false,
+      userInfo: '',
+      roleList: [],
+      // 选中角色的id
+      selectRoleId: '',
       // 添加用户的表单名称
       addUserForm: {
         username: '',
@@ -301,12 +337,15 @@ export default {
     },
     // 监听删除用户信息
     async deleteUserInfo(id) {
-      const confirmResult = await this.$confirm('此操作将永久删除该用户信息, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning',
-      })
-        .catch((error) => error)
+      const confirmResult = await this.$confirm(
+        '此操作将永久删除该用户信息, 是否继续?',
+        '提示',
+        {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        }
+      ).catch((error) => error)
       // 根据弹出框的结果进行请求操作
       console.log(confirmResult)
       if (confirmResult !== 'confirm') {
@@ -316,6 +355,37 @@ export default {
       if (res.meta.status !== 200) return this.$message.error('删除失败')
       this.$message.success('删除成功')
       this.getUserList()
+    },
+    // 弹出设置用户角色对话框
+    async setRoleDialog(userInfo) {
+      this.userInfo = userInfo
+      // 弹出对话框之前，获取角色列表
+      const { data: res } = await this.$http.get('roles')
+      console.log(res)
+      this.roleList = res.data
+      this.setRoleDialogVisible = true
+    },
+    // 保存用户的角色信息
+    async saveRoleInfo() {
+      if (!this.selectRoleId) {
+        return this.$message.error('请选择角色信息')
+      }
+      const {
+        data: res,
+      } = await this.$http.put(`users/${this.userInfo.id}/role`, {
+        rid: this.selectRoleId,
+      })
+      if (res.meta.status !== 200) {
+        return this.$message.error('保存用户角色失败')
+      }
+      this.$message.success('保存用户角色成功')
+      this.getUserList()
+      this.setRoleDialogVisible = false
+    },
+    // 监听配置角色关闭对话框
+    setRoleDialogClose() {
+      this.userInfo = ''
+      this.selectRoleId = ''
     },
     // 监听关闭修改用户信息对话框
     editDialogClose() {
@@ -342,4 +412,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.role span {
+  display: inline-block;
+  width: 100px;
+  // margin-right: 15px;
+  // margin-left: 10px;
+}
 </style>
