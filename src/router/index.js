@@ -2,6 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
+import Welcome from '../components/Welcome.vue'
+import UserList from '../components/UserList.vue'
 
 Vue.use(VueRouter)
 
@@ -18,7 +20,20 @@ const routes = [
   },
   {
     path: '/home',
-    component: Home
+    component: Home,
+    // 重定向到welcome页
+    redirect: '/welcome',
+    // 定义子路由，需要在home组件中设置子组件的占位符 router-view
+    children: [
+      {
+        path: '/welcome',
+        component: Welcome
+      },
+      {
+        path: '/users',
+        component: UserList
+      }
+    ]
   }
 ]
 
