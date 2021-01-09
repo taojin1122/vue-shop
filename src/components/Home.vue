@@ -39,6 +39,7 @@
         </el-menu>
       </el-aside>
       <el-main>
+        <!-- 组件占位符 -->
         <router-view></router-view>
       </el-main>
     </el-container>
