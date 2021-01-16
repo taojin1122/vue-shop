@@ -25,3 +25,12 @@
  .el-cascader-panel {
     height: 200px !important;
   }
+  .el-step__title {
+    font-size: 13px;
+}
+.quill-editor {
+    min-height: 300px;
+}
+.ql-container.ql-snow {
+    height: 300px;
+}
