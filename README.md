@@ -33,6 +33,9 @@ npm install vue-quill-editor -S
 深度拷贝组件
 npm install lodash -S
 
+安装echarts依赖
+npm install echarts -S
+
 
 
 
